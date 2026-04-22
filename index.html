@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gate House Exception List</title>
+
+  <!-- Roboto font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Flatpickr date picker -->
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════ TOP NAV ═══════════════════════ -->
+<nav class="top-nav d-flex align-items-center justify-content-between px-4">
+  <div>
+    <h1 class="page-title mb-0">Gate House Exception List</h1>
+    <p class="page-subtitle mb-0">Monitor and manage shipment exceptions at entry/exit points</p>
+  </div>
+  <div class="d-flex align-items-center gap-3">
+    <button class="btn btn-icon position-relative" title="Notifications">
+      <i class="bi bi-bell fs-5"></i>
+      <span class="badge-dot"></span>
+    </button>
+    <div class="avatar">JM</div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════ MAIN CONTENT ═══════════════════════ -->
+<main class="main-content px-4 pb-5">
+
+  <!-- KPI Widgets: Today's Gatehouse Request Stats -->
+  <div class="row g-3 mb-4" id="summaryCards">
+    <div class="col-6 col-md-3">
+      <div class="stat-card stat-card--total">
+        <div class="stat-label">Total Requests Today</div>
+        <div class="stat-value" id="statRequests">–</div>
+        <div class="stat-sub" id="statRequestsSub"></div>
+        <div class="stat-icon"><i class="bi bi-send"></i></div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card stat-card--success">
+        <div class="stat-label">Successful</div>
+        <div class="stat-value" id="statSuccess">–</div>
+        <div class="stat-sub" id="statSuccessSub"></div>
+        <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card stat-card--exception">
+        <div class="stat-label">Exceptions (Failed)</div>
+        <div class="stat-value" id="statExceptions">–</div>
+        <div class="stat-sub" id="statExceptionsSub"></div>
+        <div class="stat-icon"><i class="bi bi-x-circle"></i></div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card stat-card--rate">
+        <div class="stat-label">Total Exceptions</div>
+        <div class="stat-value" id="statRate">–</div>
+        <div class="stat-sub" id="statRateSub"></div>
+        <div class="stat-icon"><i class="bi bi-list-ul"></i></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Toolbar -->
+  <div class="toolbar-row mb-2">
+
+    <!-- Left: record count -->
+    <span id="recordCount" class="text-muted small">Loading…</span>
+
+    <!-- Right: search + filter + view toggle + export -->
+    <div class="toolbar-right">
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <i class="bi bi-search search-icon"></i>
+        <input id="globalSearch" type="text" class="form-control search-input" placeholder="Search container, transport…" />
+      </div>
+
+      <!-- Filter trigger + dropdown -->
+      <div class="filter-trigger-wrap">
+        <button id="btnFilterToggle" class="btn-filter-trigger">
+          <i class="bi bi-funnel-fill"></i>
+          <span>Filters</span>
+          <span class="filter-active-badge d-none" id="filterActiveBadge">0</span>
+          <i class="bi bi-chevron-down trigger-chevron" id="triggerChevron"></i>
+        </button>
+
+        <div class="filter-dropdown filter-dropdown--right" id="filterDropdown">
+          <div class="filter-dropdown-header">
+            <span class="filter-title-text"><i class="bi bi-funnel-fill me-2"></i>Filters</span>
+            <button id="btnResetFilters" class="btn-reset">
+              <i class="bi bi-arrow-counterclockwise"></i> Reset All
+            </button>
+          </div>
+          <div class="filter-body">
+
+            <div class="filter-group">
+              <div class="filter-group-label"><i class="bi bi-tag"></i> Exception Type</div>
+              <div class="filter-chips" id="chipType">
+                <button class="filter-chip active" data-val="">All</button>
+                <button class="filter-chip" data-val="CONTAINER_DELAY_NOTIFICATION"><i class="bi bi-clock-history"></i> Container Delay</button>
+                <button class="filter-chip" data-val="TRANSPORT_WARNING"><i class="bi bi-exclamation-triangle"></i> Transport Warning</button>
+              </div>
+              <select id="filterType" class="d-none">
+                <option value="">All</option>
+                <option value="CONTAINER_DELAY_NOTIFICATION">Container Delay</option>
+                <option value="TRANSPORT_WARNING">Transport Warning</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-label"><i class="bi bi-layers"></i> Sub-type</div>
+              <div class="filter-chips" id="chipTitle">
+                <button class="filter-chip active" data-val="">All</button>
+                <button class="filter-chip chip-increase" data-val="PREDICTION_CHANGE_DELAY_INCREASE"><i class="bi bi-arrow-up"></i> Delay Increase</button>
+                <button class="filter-chip chip-decrease" data-val="PREDICTION_CHANGE_DELAY_DECREASE"><i class="bi bi-arrow-down"></i> Delay Decrease</button>
+                <button class="filter-chip chip-equip" data-val="EQUIPMENT_WARNING"><i class="bi bi-box-seam"></i> Equipment Warning</button>
+              </div>
+              <select id="filterTitle" class="d-none">
+                <option value="">All</option>
+                <option value="PREDICTION_CHANGE_DELAY_INCREASE">Delay Increase</option>
+                <option value="PREDICTION_CHANGE_DELAY_DECREASE">Delay Decrease</option>
+                <option value="EQUIPMENT_WARNING">Equipment Warning</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-label"><i class="bi bi-activity"></i> Event Code</div>
+              <div class="filter-chips" id="chipEvent">
+                <button class="filter-chip active" data-val="">All</button>
+                <button class="filter-chip" data-val="ARRI"><i class="bi bi-box-arrow-in-down"></i> ARRI – Arrival</button>
+                <button class="filter-chip" data-val="DISC"><i class="bi bi-arrow-bar-down"></i> DISC – Discharge</button>
+                <button class="filter-chip" data-val="GTOT"><i class="bi bi-box-arrow-right"></i> GTOT – Gate Out</button>
+              </div>
+              <select id="filterEvent" class="d-none">
+                <option value="">All</option>
+                <option value="ARRI">ARRI</option>
+                <option value="DISC">DISC</option>
+                <option value="GTOT">GTOT</option>
+              </select>
+            </div>
+
+            <div class="filter-group filter-group--inline">
+              <div class="filter-inline-item">
+                <div class="filter-group-label"><i class="bi bi-geo-alt"></i> Location</div>
+                <select id="filterLocation" class="form-select form-select-sm filter-select">
+                  <option value="">All Locations</option>
+                </select>
+              </div>
+              <div class="filter-inline-item">
+                <div class="filter-group-label"><i class="bi bi-calendar-range"></i> Date Range</div>
+                <div class="date-range-wrap">
+                  <div class="date-input-wrap">
+                    <i class="bi bi-calendar3 date-ico"></i>
+                    <input id="filterFrom" type="text" class="form-control form-control-sm flatpickr date-input" placeholder="From date" readonly />
+                  </div>
+                  <span class="date-sep">→</span>
+                  <div class="date-input-wrap">
+                    <i class="bi bi-calendar3 date-ico"></i>
+                    <input id="filterTo" type="text" class="form-control form-control-sm flatpickr date-input" placeholder="To date" readonly />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /filter-trigger-wrap -->
+
+      <!-- View toggle -->
+      <div class="btn-group view-toggle" role="group">
+        <button id="btnTable" class="btn btn-sm btn-primary active">
+          <i class="bi bi-table"></i> Table
+        </button>
+        <button id="btnCards" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-list-ul"></i> List
+        </button>
+      </div>
+
+      <!-- Export -->
+      <button id="btnExport" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-download"></i> Export CSV
+      </button>
+
+    </div>
+  </div>
+
+  <!-- TABLE VIEW -->
+  <div id="tableView">
+    <div class="table-responsive">
+      <table class="table table-hover exception-table align-middle">
+        <thead>
+          <tr>
+            <th data-sort="exception_datetime" class="sortable">Date/Time <i class="bi bi-arrow-down-up sort-icon"></i></th>
+            <th data-sort="exception_type" class="sortable">Type <i class="bi bi-arrow-down-up sort-icon"></i></th>
+            <th data-sort="title" class="sortable">Sub-type <i class="bi bi-arrow-down-up sort-icon"></i></th>
+            <th>Container / Ref</th>
+            <th>Transport ID</th>
+            <th>Location</th>
+            <th>Event Code</th>
+            <th>Call Type</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <!-- Pagination -->
+    <div class="d-flex align-items-center justify-content-between mt-2 flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <label class="small text-muted mb-0">Rows per page:</label>
+        <select id="pageSize" class="form-select form-select-sm" style="width:80px;">
+          <option value="10" selected>10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+    </div>
+  </div>
+
+  <!-- CARDS VIEW -->
+  <div id="cardsView" class="d-none">
+    <div class="row g-3" id="cardsGrid"></div>
+    <div class="d-flex justify-content-center mt-3">
+      <nav><ul class="pagination pagination-sm mb-0" id="paginationCards"></ul></nav>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════ DETAIL MODAL ═══════════════════════ -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailModalLabel">Exception Detail</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="exceptionpage.js"></script>
+</body>
+</html>
