@@ -10,7 +10,7 @@ $(function () {
   let pageSize = 10;
   let sortKey = 'exception_datetime';
   let sortDir = 'desc';
-  let viewMode = 'table'; // 'table' | 'cards'
+  let viewMode = 'cards'; // 'table' | 'cards'
 
   const CARDS_PER_PAGE = 5;
 

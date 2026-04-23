@@ -181,10 +181,10 @@
 
       <!-- View toggle -->
       <div class="btn-group view-toggle" role="group">
-        <button id="btnTable" class="btn btn-sm btn-primary active">
+        <button id="btnTable" class="btn btn-sm btn-outline-secondary">
           <i class="bi bi-table"></i> Table
         </button>
-        <button id="btnCards" class="btn btn-sm btn-outline-secondary">
+        <button id="btnCards" class="btn btn-sm btn-primary active">
           <i class="bi bi-list-ul"></i> List
         </button>
       </div>
@@ -198,7 +198,7 @@
   </div>
 
   <!-- TABLE VIEW -->
-  <div id="tableView">
+  <div id="tableView" class="d-none">
     <div class="table-responsive">
       <table class="table table-hover exception-table align-middle">
         <thead>
@@ -233,7 +233,7 @@
   </div>
 
   <!-- CARDS VIEW -->
-  <div id="cardsView" class="d-none">
+  <div id="cardsView">
     <div class="row g-3" id="cardsGrid"></div>
     <div class="d-flex justify-content-center mt-3">
       <nav><ul class="pagination pagination-sm mb-0" id="paginationCards"></ul></nav>
