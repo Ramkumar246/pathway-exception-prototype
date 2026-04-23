@@ -286,7 +286,8 @@ $(function () {
             <div class="mt-2">${titleBadge(item.title)}</div>
           </div>
 
-          <!-- Col 2: Location → Event Code + Call type below -->
+          <!-- Col 2: Location → Event Code + Call type below (hidden for TRANSPORT_WARNING) -->
+          ${item.exception_type !== 'TRANSPORT_WARNING' ? `
           <div class="card-col card-col--chips">
             <div class="card-col-label">Route / Event</div>
             <div class="card-route-row">
@@ -295,13 +296,14 @@ $(function () {
               <span class="card-chip ${eventColor}">${eventCode}</span>
             </div>
             <div class="mt-1 card-calltype-text">${callType}</div>
-          </div>
+          </div>` : ''}
 
-          <!-- Col 3: Schedule Change (PREV → delta → NEW horizontal) -->
+          <!-- Col 3: Schedule Change (hidden for TRANSPORT_WARNING) -->
+          ${item.exception_type !== 'TRANSPORT_WARNING' ? `
           <div class="card-col card-col--timing">
             <div class="card-col-label">Schedule Change</div>
             ${timingHtml || '<span class="card-no-change">No schedule change</span>'}
-          </div>
+          </div>` : ''}
 
           <!-- Col 4: Detail message -->
           <div class="card-col card-col--detail">
